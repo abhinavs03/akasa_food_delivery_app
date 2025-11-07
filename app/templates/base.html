@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title or 'Akasa Food Ordering' }}</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="header-container">
+        <h1>🍽️ Akasa Food</h1>
+        <nav>
+          <a href="/">Home</a>
+          <a href="/items">Browse</a>
+          <a href="/cart">Cart</a>
+          <a href="/orders">Orders</a>
+          <a href="/auth/login">Login</a>
+          <a href="/auth/register">Register</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

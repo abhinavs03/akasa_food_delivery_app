@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Your Orders</h2>
+{% if orders|length == 0 %}
+<div class="empty-state">
+  <div class="empty-state-icon">📦</div>
+  <h3>No orders yet</h3>
+  <p>Start ordering to see your order history here!</p>
+  <a href="/items" class="btn" style="margin-top: 20px; display: inline-block;">Browse Menu</a>
+</div>
+{% else %}
+<table>
+  <thead>
+    <tr>
+      <th>Order ID</th>
+      <th>Tracking ID</th>
+      <th>Status</th>
+      <th>Total</th>
+      <th>Order Date</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for o in orders %}
+    <tr>
+      <td><strong>#{{ o.id }}</strong></td>
+      <td><code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 12px;">{{ o.tracking_id }}</code></td>
+      <td>
+        <span style="padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; 
+          {% if o.status == 'DELIVERED' %}background: #d4edda; color: #155724;
+          {% elif o.status == 'SHIPPED' %}background: #cce5ff; color: #004085;
+          {% elif o.status == 'PLACED' %}background: #fff3cd; color: #856404;
+          {% else %}background: #f8d7da; color: #721c24;{% endif %}">
+          {{ o.status }}
+        </span>
+      </td>
+      <td><strong>₹{{ '%.2f' % (o.total_cents/100) }}</strong></td>
+      <td>{{ o.created_at.strftime('%Y-%m-%d %H:%M') if o.created_at else 'N/A' }}</td>
+      <td><a href="/orders/{{ o.id }}" style="color: var(--primary-color); font-weight: 600;">View Details →</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

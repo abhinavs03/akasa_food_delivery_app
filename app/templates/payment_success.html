@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align: center; padding: 60px 20px; max-width: 600px; margin: 0 auto;">
+  <div style="font-size: 80px; margin-bottom: 24px;">✅</div>
+  <h2 style="color: var(--secondary-color); margin-bottom: 16px;">Payment Successful!</h2>
+  <p style="font-size: 18px; color: #686b78; margin-bottom: 32px;">
+    Your order has been placed successfully. We'll start preparing your food right away!
+  </p>
+
+  <div style="background: white; padding: 32px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 32px; text-align: left;">
+    <h3 style="margin: 0 0 24px 0;">Order Details</h3>
+    <div style="display: grid; gap: 16px;">
+      <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+        <span style="color: #686b78;">Order ID:</span>
+        <strong>#{{ order.id }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+        <span style="color: #686b78;">Tracking ID:</span>
+        <code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 12px;">{{ order.tracking_id }}</code>
+      </div>
+      {% if payment %}
+      <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+        <span style="color: #686b78;">Transaction ID:</span>
+        <code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 12px;">{{ payment.transaction_id }}</code>
+      </div>
+      <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+        <span style="color: #686b78;">Payment Method:</span>
+        <strong>
+          {% if payment.payment_method == 'CREDIT_CARD' %}💳 Credit Card
+          {% elif payment.payment_method == 'DEBIT_CARD' %}💳 Debit Card
+          {% elif payment.payment_method == 'UPI' %}📱 UPI
+          {% elif payment.payment_method == 'WALLET' %}💰 Wallet
+          {% else %}{{ payment.payment_method }}{% endif %}
+        </strong>
+      </div>
+      {% endif %}
+      <div style="display: flex; justify-content: space-between; padding-top: 12px;">
+        <span style="font-size: 18px; font-weight: 600;">Total Paid:</span>
+        <span style="font-size: 24px; font-weight: 700; color: var(--primary-color);">₹{{ '%.2f' % (order.total_cents/100) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 16px; justify-content: center;">
+    <a href="/orders/{{ order.id }}" class="btn">View Order Details</a>
+    <a href="/items" class="btn btn-secondary">Continue Shopping</a>
+  </div>
+</div>
+{% endblock %}
+

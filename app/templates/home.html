@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="hero">
+  <h2>Welcome to Akasa Food</h2>
+  <p>Order delicious food with just a few clicks. Browse our menu, add to cart, and enjoy!</p>
+</div>
+<section style="text-align: center; padding: 40px 20px;">
+  <h2 style="margin-bottom: 16px;">How it works</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-top: 32px;">
+    <div style="padding: 24px; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <div style="font-size: 48px; margin-bottom: 12px;">🍽️</div>
+      <h3 style="margin: 0 0 8px 0; font-size: 18px;">Browse Menu</h3>
+      <p style="color: #686b78; margin: 0; font-size: 14px;">Explore our delicious food items</p>
+    </div>
+    <div style="padding: 24px; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <div style="font-size: 48px; margin-bottom: 12px;">🛒</div>
+      <h3 style="margin: 0 0 8px 0; font-size: 18px;">Add to Cart</h3>
+      <p style="color: #686b78; margin: 0; font-size: 14px;">Select items you want to order</p>
+    </div>
+    <div style="padding: 24px; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <div style="font-size: 48px; margin-bottom: 12px;">💳</div>
+      <h3 style="margin: 0 0 8px 0; font-size: 18px;">Checkout</h3>
+      <p style="color: #686b78; margin: 0; font-size: 14px;">Place your order and enjoy!</p>
+    </div>
+  </div>
+  <div style="margin-top: 40px;">
+    <a href="/items" class="btn" style="display: inline-block;">Start Ordering →</a>
+  </div>
+</section>
+{% endblock %}

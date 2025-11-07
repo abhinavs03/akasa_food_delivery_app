@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Browse Menu</h2>
+<form method="get" action="/items" class="filters">
+  <label>
+    Filter by Category:
+    <select name="category" onchange="this.form.submit()">
+      <option value="" {% if selected=='All' %}selected{% endif %}>All Categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat.name }}" {% if selected==cat.name %}selected{% endif %}>{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+</form>
+{% if items|length == 0 %}
+  <div class="empty-state">
+    <div class="empty-state-icon">🍽️</div>
+    <h3>No items available</h3>
+    <p>Please check back later for new items.</p>
+  </div>
+{% else %}
+  <div class="grid">
+  {% for item in items %}
+    <div class="card">
+      <div class="card-image"></div>
+      <div class="card-content">
+        <h3>{{ item.name }}</h3>
+        <p class="description">{{ item.description }}</p>
+        <div class="price">₹{{ '%.2f' % (item.price_cents/100) }}</div>
+        <div class="stock {% if item.stock <= 5 %}low{% endif %}">
+          {% if item.stock > 0 %}
+            ✓ {{ item.stock }} in stock
+          {% else %}
+            ✗ Out of stock
+          {% endif %}
+        </div>
+        <form method="post" action="/cart/add">
+          <input type="hidden" name="item_id" value="{{ item.id }}" />
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="number" name="quantity" value="1" min="1" max="{{ item.stock }}" />
+            <button type="submit" class="btn" {% if item.stock<=0 %}disabled{% endif %}>
+              {% if item.stock > 0 %}Add to Cart{% else %}Out of Stock{% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

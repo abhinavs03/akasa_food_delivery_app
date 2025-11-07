@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Complete Payment</h2>
+{% if error %}
+<div class="error-message">{{ error }}</div>
+{% endif %}
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+  <!-- Order Summary -->
+  <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <h3 style="margin: 0 0 20px 0;">Order Summary</h3>
+    <div style="margin-bottom: 16px;">
+      <div style="font-size: 13px; color: #686b78;">Order ID</div>
+      <div style="font-weight: 600; font-family: monospace;">#{{ order.id }}</div>
+    </div>
+    <div style="margin-bottom: 16px;">
+      <div style="font-size: 13px; color: #686b78;">Tracking ID</div>
+      <div style="font-weight: 600; font-family: monospace; font-size: 12px;">{{ order.tracking_id }}</div>
+    </div>
+    <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 16px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span>Subtotal:</span>
+        <span>₹{{ '%.2f' % (order.total_cents/100) }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span>Delivery:</span>
+        <span style="color: var(--secondary-color);">FREE</span>
+      </div>
+      <div style="border-top: 2px solid #e5e7eb; padding-top: 12px; margin-top: 12px; display: flex; justify-content: space-between;">
+        <strong>Total:</strong>
+        <strong style="font-size: 20px;">₹{{ '%.2f' % (order.total_cents/100) }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Form -->
+  <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <h3 style="margin: 0 0 20px 0;">Payment Details</h3>
+    <form method="post" action="/payment/{{ order.id }}/process" id="paymentForm">
+      <!-- Payment Method Selection -->
+      <div class="form-group">
+        <label>Payment Method</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+          <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+            <input type="radio" name="payment_method" value="CREDIT_CARD" required style="margin-right: 8px;" onchange="togglePaymentFields()">
+            <span>💳 Credit Card</span>
+          </label>
+          <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+            <input type="radio" name="payment_method" value="DEBIT_CARD" required style="margin-right: 8px;" onchange="togglePaymentFields()">
+            <span>💳 Debit Card</span>
+          </label>
+          <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+            <input type="radio" name="payment_method" value="UPI" required style="margin-right: 8px;" onchange="togglePaymentFields()">
+            <span>📱 UPI</span>
+          </label>
+          <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+            <input type="radio" name="payment_method" value="WALLET" required style="margin-right: 8px;" onchange="togglePaymentFields()">
+            <span>💰 Wallet</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Card Details -->
+      <div id="cardFields" style="display: none;">
+        <div class="form-group">
+          <label>Card Number</label>
+          <input type="text" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" />
+        </div>
+        <div class="form-group">
+          <label>Cardholder Name</label>
+          <input type="text" name="card_name" placeholder="John Doe" />
+        </div>
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label>Expiry Date</label>
+            <input type="text" name="card_expiry" placeholder="MM/YY" maxlength="5" />
+          </div>
+          <div class="form-group">
+            <label>CVV</label>
+            <input type="text" name="card_cvv" placeholder="123" maxlength="4" />
+          </div>
+        </div>
+      </div>
+
+      <!-- UPI Details -->
+      <div id="upiFields" style="display: none;">
+        <div class="form-group">
+          <label>UPI ID</label>
+          <input type="text" name="upi_id" placeholder="yourname@paytm" />
+        </div>
+      </div>
+
+      <!-- Wallet Details -->
+      <div id="walletFields" style="display: none;">
+        <div class="form-group">
+          <label>Wallet Provider</label>
+          <select name="wallet_provider" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;">
+            <option value="">Select wallet</option>
+            <option value="PAYTM">Paytm</option>
+            <option value="PHONEPE">PhonePe</option>
+            <option value="AMAZON_PAY">Amazon Pay</option>
+            <option value="GOOGLE_PAY">Google Pay</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn" style="width: 100%; padding: 16px; font-size: 18px; margin-top: 20px;">
+        Pay ₹{{ '%.2f' % (order.total_cents/100) }}
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+function togglePaymentFields() {
+  const method = document.querySelector('input[name="payment_method"]:checked')?.value;
+  document.getElementById('cardFields').style.display = (method === 'CREDIT_CARD' || method === 'DEBIT_CARD') ? 'block' : 'none';
+  document.getElementById('upiFields').style.display = method === 'UPI' ? 'block' : 'none';
+  document.getElementById('walletFields').style.display = method === 'WALLET' ? 'block' : 'none';
+}
+
+// Format card number
+document.querySelector('input[name="card_number"]')?.addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\s/g, '');
+  let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+  e.target.value = formatted;
+});
+
+// Format expiry date
+document.querySelector('input[name="card_expiry"]')?.addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\D/g, '');
+  if (value.length >= 2) {
+    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+  }
+  e.target.value = value;
+});
+</script>
+{% endblock %}
+

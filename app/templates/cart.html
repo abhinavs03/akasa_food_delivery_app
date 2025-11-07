@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Your Cart</h2>
+{% if cart_items|length == 0 %}
+<div class="empty-state">
+  <div class="empty-state-icon">🛒</div>
+  <h3>Your cart is empty</h3>
+  <p>Add some delicious items to get started!</p>
+  <a href="/items" class="btn" style="margin-top: 20px; display: inline-block;">Browse Menu</a>
+</div>
+{% else %}
+<table>
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Quantity</th>
+      <th>Unit Price</th>
+      <th>Subtotal</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for ci in cart_items %}
+    <tr>
+      <td>
+        <strong>{{ ci.item.name }}</strong>
+        <div style="font-size: 13px; color: #686b78; margin-top: 4px;">{{ ci.item.description }}</div>
+      </td>
+      <td>
+        <form method="post" action="/cart/update" style="display: flex; gap: 8px; align-items: center;">
+          <input type="hidden" name="cart_item_id" value="{{ ci.id }}" />
+          <input type="number" name="quantity" value="{{ ci.quantity }}" min="0" max="{{ ci.item.stock }}" style="width: 70px; padding: 8px; border: 2px solid #e5e7eb; border-radius: 6px; text-align: center;" />
+          <button type="submit" style="padding: 8px 16px; font-size: 13px;">Update</button>
+        </form>
+      </td>
+      <td>₹{{ '%.2f' % (ci.item.price_cents/100) }}</td>
+      <td><strong>₹{{ '%.2f' % ((ci.item.price_cents*ci.quantity)/100) }}</strong></td>
+      <td>
+        <form method="post" action="/cart/remove" style="display: inline;">
+          <input type="hidden" name="cart_item_id" value="{{ ci.id }}" />
+          <button type="submit" style="background: #ff6b6b; padding: 8px 16px; font-size: 13px;">Remove</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<div class="total">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <span>Total Amount:</span>
+    <span style="font-size: 28px;">₹{{ '%.2f' % (total_cents/100) }}</span>
+  </div>
+  <form method="post" action="/payment/create-order" style="margin: 0;">
+    <button type="submit" class="btn" style="width: 100%; padding: 16px; font-size: 18px;">💳 Proceed to Payment</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}
